@@ -24,16 +24,20 @@ public class Receiver2 {
             channel.queueDeclare(QUEUE_NAME,false,false,false,null);
 //            每次接受消息的数量 小于等于1
             channel.basicQos(2);
-            Consumer consumer = new DefaultConsumer(channel){
+            Channel finalChannel = channel;
+            Consumer consumer = new DefaultConsumer(finalChannel){
                 @SneakyThrows
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                     String message = new String(body,"utf-8");
                     System.out.println("消费者2："+message);
                     Thread.sleep(1000);
+                   //  手动回执消息                         回执的消息                 一次回执一条消息
+                    finalChannel.basicAck(envelope.getDeliveryTag(),false);
                 }
             };
-            channel.basicConsume(QUEUE_NAME,true,consumer);
+            Boolean autoAck = false;
+            channel.basicConsume(QUEUE_NAME,autoAck,consumer);
         }catch (Exception e){
 
         }

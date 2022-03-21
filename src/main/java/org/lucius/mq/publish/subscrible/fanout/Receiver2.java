@@ -1,12 +1,13 @@
-package org.lucius.mq.work.fair;
+package org.lucius.mq.publish.subscrible.fanout;
 
 import com.rabbitmq.client.*;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
 
-public class Receiver1 {
-    private final  static String QUEUE_NAME="LUCIUS_Work_fair";
+public class Receiver2 {
+    private final  static String QUEUE_NAME="ps_email";
+    private final  static String EXCHANGE_NAME="PS_TEST";
 
     public static void main(String[] args) throws Exception{
 
@@ -22,21 +23,21 @@ public class Receiver1 {
             connection  = connectionFactory.newConnection();
             channel = connection.createChannel();
             channel.queueDeclare(QUEUE_NAME,false,false,false,null);
-            channel.basicQos(1);
+            channel.queueBind(QUEUE_NAME,EXCHANGE_NAME,"");
+//            每次接受消息的数量 小于等于1
+            channel.basicQos(2);
             Channel finalChannel = channel;
-
-            Consumer consumer = new DefaultConsumer(channel){
+            Consumer consumer = new DefaultConsumer(finalChannel){
                 @SneakyThrows
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                     String message = new String(body,"utf-8");
-                    System.out.println("消费者1："+message);
-                    Thread.sleep(2000);
-                    //  手动回执消息                         回执的消息                 一次回执一条消息
+                    System.out.println("邮件服务："+message);
+                    Thread.sleep(1000);
+                   //  手动回执消息                         回执的消息                 一次回执一条消息
                     finalChannel.basicAck(envelope.getDeliveryTag(),false);
                 }
             };
-//            设置回执为手动
             Boolean autoAck = false;
             channel.basicConsume(QUEUE_NAME,autoAck,consumer);
         }catch (Exception e){
