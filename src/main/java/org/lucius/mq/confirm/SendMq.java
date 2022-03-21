@@ -1,6 +1,5 @@
-package org.lucius.mq.publish.subscrible.fanout;
+package org.lucius.mq.confirm;
 
-import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -11,7 +10,6 @@ import java.util.concurrent.TimeoutException;
 public class SendMq {
 
     private final  static String QUEUE_NAME="LUCIUS_TEST";
-    private final  static String EXCHANGE_NAME="PS_TEST";
     public static void main(String[] args) throws IOException, TimeoutException {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setVirtualHost("lucius");
@@ -25,16 +23,23 @@ public class SendMq {
             connection =connectionFactory.newConnection();
 
             channel = connection.createChannel();
-
-//            创建交换机，只要绑定到交换机，就可以将消息路由到对应队列上
-            channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.FANOUT);
-//            channel.queueDeclare(QUEUE_NAME,false,false,false,null);
+//            开启confirm确认
+            channel.confirmSelect();
+            channel.queueDeclare(QUEUE_NAME,false,false,false,null);
             String message="爷来了";
-            channel.basicPublish(EXCHANGE_NAME,"",null,message.getBytes("utf-8"));
-            System.out.println("发送完成");
+            int i = 1/0;
+            channel.basicPublish("",QUEUE_NAME,null,message.getBytes("utf-8"));
+            if(channel.waitForConfirms()) {
 
+                System.out.println("发送完成");
+            }else{
+                System.out.println("发送失败");
+            }
+            channel.waitForConfirmsOrDie();
+            System.out.println("发送结束");
         }catch (Exception e){
 
+            e.printStackTrace();
         }finally {
             if(channel !=null && channel.isOpen()){
                 channel.close();
