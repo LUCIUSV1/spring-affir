@@ -23,7 +23,7 @@ public class Receiver2 {
             channel = connection.createChannel();
             channel.queueDeclare(QUEUE_NAME,false,false,false,null);
 //            每次接受消息的数量 小于等于1
-            channel.basicQos(1);
+            channel.basicQos(2);
             Consumer consumer = new DefaultConsumer(channel){
                 @SneakyThrows
                 @Override
