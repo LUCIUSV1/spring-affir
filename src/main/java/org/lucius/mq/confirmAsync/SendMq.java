@@ -8,6 +8,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeoutException;
 
+/***
+ * 异步confirm
+ */
 public class SendMq {
 
     private final  static String QUEUE_NAME="confirm_async";

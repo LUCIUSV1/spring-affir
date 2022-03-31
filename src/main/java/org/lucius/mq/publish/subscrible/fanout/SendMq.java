@@ -8,6 +8,10 @@ import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/***
+ *
+ * 广播
+ */
 public class SendMq {
 
     private final  static String QUEUE_NAME="LUCIUS_TEST";

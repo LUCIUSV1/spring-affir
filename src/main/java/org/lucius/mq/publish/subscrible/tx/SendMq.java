@@ -8,6 +8,9 @@ import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/***
+ * AMQP事务控制
+ */
 public class SendMq {
 
     private final  static String QUEUE_NAME="tx";

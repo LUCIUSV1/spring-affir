@@ -10,7 +10,7 @@ import java.util.concurrent.TimeoutException;
 
 /***
  *
- * 路由模式
+ * 主题模式
  */
 public class SendMq {
 
